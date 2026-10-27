@@ -67,6 +67,23 @@ mkdir -p ~/.config/direnv/lib
 ln -s ~/.local/share/direnv-aws/lib/*.sh ~/.config/direnv/lib/
 ```
 
+### Pinned in a project
+
+To use a helper without installing anything, pin it in a project's `.envrc` with direnv's `source_url`. This also works for teammates and CI, which only need direnv. Ask direnv for the hash of each file, then put it in the `.envrc`:
+
+```bash
+direnv fetchurl https://raw.githubusercontent.com/direnv-contrib/direnv-aws/v0.1.0/lib/aws.sh
+direnv fetchurl https://raw.githubusercontent.com/direnv-contrib/direnv-aws/v0.1.0/lib/aws_secret.sh
+```
+
+```bash
+source_url "https://raw.githubusercontent.com/direnv-contrib/direnv-aws/v0.1.0/lib/aws.sh" "sha256-…"
+source_url "https://raw.githubusercontent.com/direnv-contrib/direnv-aws/v0.1.0/lib/aws_secret.sh" "sha256-…"
+use_aws_secret prod/db/creds
+```
+
+Replace `v0.1.0` with the release you want. direnv refuses to load a file whose content does not match the hash, so a tag that is later changed cannot swap the code under you. `aws.sh` is shared by the other helpers, so it is always the first line, and each helper you use needs its own `source_url` line.
+
 ## Usage
 
 Call the functions from a `.envrc`:
