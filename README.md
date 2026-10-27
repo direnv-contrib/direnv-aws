@@ -31,27 +31,33 @@ direnv loads every `*.sh` file in `~/.config/direnv/lib/` before it evaluates a 
 
 ### Using Nix
 
-Add the flake as an input, and install its package:
+Add the flake as an input:
 
 ```nix
 inputs.direnv-aws.url = "github:direnv-contrib/direnv-aws";
 ```
 
+With Home Manager, import the module and enable it. It sources the scripts from direnv's standard library, so `programs.direnv.enable` must be on as well:
+
+```nix
+imports = [ inputs.direnv-aws.homeManagerModules.default ];
+
+programs.direnv-aws.enable = true;
+```
+
+Without Home Manager, install the package, which places the scripts in `share/direnv-aws`:
+
 ```nix
 environment.systemPackages = [ inputs.direnv-aws.packages.${system}.default ];
 ```
 
-The package places the scripts in `share/direnv-aws`. With Home Manager managing direnv, source them from the standard library:
+Then source them from the standard library with a loop in `~/.config/direnv/lib/direnv-aws.sh`, pointing at the package path:
 
-```nix
-programs.direnv.stdlib = ''
-  for lib in ${inputs.direnv-aws.packages.${system}.default}/share/direnv-aws/*.sh; do
-    source "$lib"
-  done
-'';
+```bash
+for lib in /path/to/direnv-aws/share/direnv-aws/*.sh; do
+  source "$lib"
+done
 ```
-
-If you manage `~/.config/direnv` yourself, put the same loop in `~/.config/direnv/lib/direnv-aws.sh`, pointing at the package path.
 
 ### Manual
 
@@ -119,6 +125,9 @@ The tests stub `aws` and `aws-vault` with shell functions and load direnv's own 
 | Repo | What it provides |
 |------|-----------------|
 | **direnv-aws** ← you are here | AWS Secrets Manager and SSM Parameter Store for direnv |
+| [direnv-az](https://github.com/direnv-contrib/direnv-az) | Azure Key Vault and subscription selection for direnv |
+| [direnv-gcp](https://github.com/direnv-contrib/direnv-gcp) | Google Secret Manager and project selection for direnv |
+| [direnv-op](https://github.com/direnv-contrib/direnv-op) | 1Password secrets and items for direnv |
 
 ## License
 
