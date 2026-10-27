@@ -40,7 +40,7 @@ inputs.direnv-aws.url = "github:direnv-contrib/direnv-aws";
 With Home Manager, import the module and enable it. It sources the scripts from direnv's standard library, so `programs.direnv.enable` must be on as well:
 
 ```nix
-imports = [ inputs.direnv-aws.homeManagerModules.default ];
+imports = [ inputs.direnv-aws.homeModules.default ];
 
 programs.direnv-aws.enable = true;
 ```
@@ -82,7 +82,7 @@ source_url "https://raw.githubusercontent.com/direnv-contrib/direnv-aws/v0.1.0/l
 use_aws_secret prod/db/creds
 ```
 
-Replace `v0.1.0` with the release you want. direnv refuses to load a file whose content does not match the hash, so a tag that is later changed cannot swap the code under you. `aws.sh` is shared by the other helpers, so it is always the first line, and each helper you use needs its own `source_url` line.
+Replace `v0.1.0` with the release you want. direnv refuses to load a file whose content does not match the hash, so a tag that is later changed cannot swap the code under you. `aws.sh` is shared by the other helpers, so it has to be sourced too, and each helper you use needs its own `source_url` line. The order does not matter.
 
 ## Usage
 
