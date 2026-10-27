@@ -31,27 +31,36 @@ direnv loads every `*.sh` file in `~/.config/direnv/lib/` before it evaluates a 
 
 ### Using Nix
 
-Add the flake as an input, and install its package:
+Add the flake as an input:
 
 ```nix
 inputs.direnv-aws.url = "github:direnv-contrib/direnv-aws";
 ```
 
+With Home Manager, import the module and enable it under `programs.direnv.contrib`, next to direnv itself. It sources the scripts from direnv's standard library, so `programs.direnv.enable` must be on:
+
+```nix
+imports = [ inputs.direnv-aws.homeModules.default ];
+
+programs.direnv = {
+  enable = true;
+  contrib.aws.enable = true;
+};
+```
+
+Without Home Manager, install the package, which places the scripts in `share/direnv-aws`:
+
 ```nix
 environment.systemPackages = [ inputs.direnv-aws.packages.${system}.default ];
 ```
 
-The package places the scripts in `share/direnv-aws`. With Home Manager managing direnv, source them from the standard library:
+Then source them from the standard library with a loop in `~/.config/direnv/lib/direnv-aws.sh`, pointing at the package path:
 
-```nix
-programs.direnv.stdlib = ''
-  for lib in ${inputs.direnv-aws.packages.${system}.default}/share/direnv-aws/*.sh; do
-    source "$lib"
-  done
-'';
+```bash
+for lib in /path/to/direnv-aws/share/direnv-aws/*.sh; do
+  source "$lib"
+done
 ```
-
-If you manage `~/.config/direnv` yourself, put the same loop in `~/.config/direnv/lib/direnv-aws.sh`, pointing at the package path.
 
 ### Manual
 
@@ -60,6 +69,23 @@ git clone https://github.com/direnv-contrib/direnv-aws.git ~/.local/share/direnv
 mkdir -p ~/.config/direnv/lib
 ln -s ~/.local/share/direnv-aws/lib/*.sh ~/.config/direnv/lib/
 ```
+
+### Pinned in a project
+
+To use a helper without installing anything, pin it in a project's `.envrc` with direnv's `source_url`. This also works for teammates and CI, which only need direnv. Ask direnv for the hash of each file, then put it in the `.envrc`:
+
+```bash
+direnv fetchurl https://raw.githubusercontent.com/direnv-contrib/direnv-aws/v0.1.0/lib/aws.sh
+direnv fetchurl https://raw.githubusercontent.com/direnv-contrib/direnv-aws/v0.1.0/lib/aws_secret.sh
+```
+
+```bash
+source_url "https://raw.githubusercontent.com/direnv-contrib/direnv-aws/v0.1.0/lib/aws.sh" "sha256-…"
+source_url "https://raw.githubusercontent.com/direnv-contrib/direnv-aws/v0.1.0/lib/aws_secret.sh" "sha256-…"
+use_aws_secret prod/db/creds
+```
+
+Replace `v0.1.0` with the release you want. direnv refuses to load a file whose content does not match the hash, so a tag that is later changed cannot swap the code under you. `aws.sh` is shared by the other helpers, so it has to be sourced too, and each helper you use needs its own `source_url` line. The order does not matter.
 
 ## Usage
 
@@ -119,6 +145,9 @@ The tests stub `aws` and `aws-vault` with shell functions and load direnv's own 
 | Repo | What it provides |
 |------|-----------------|
 | **direnv-aws** ← you are here | AWS Secrets Manager and SSM Parameter Store for direnv |
+| [direnv-az](https://github.com/direnv-contrib/direnv-az) | Azure Key Vault and subscription selection for direnv |
+| [direnv-gcp](https://github.com/direnv-contrib/direnv-gcp) | Google Secret Manager and project selection for direnv |
+| [direnv-op](https://github.com/direnv-contrib/direnv-op) | 1Password secrets and items for direnv |
 
 ## License
 
