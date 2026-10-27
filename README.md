@@ -37,12 +37,15 @@ Add the flake as an input:
 inputs.direnv-aws.url = "github:direnv-contrib/direnv-aws";
 ```
 
-With Home Manager, import the module and enable it. It sources the scripts from direnv's standard library, so `programs.direnv.enable` must be on as well:
+With Home Manager, import the module and enable it under `programs.direnv.contrib`, next to direnv itself. It sources the scripts from direnv's standard library, so `programs.direnv.enable` must be on:
 
 ```nix
 imports = [ inputs.direnv-aws.homeModules.default ];
 
-programs.direnv-aws.enable = true;
+programs.direnv = {
+  enable = true;
+  contrib.aws.enable = true;
+};
 ```
 
 Without Home Manager, install the package, which places the scripts in `share/direnv-aws`:

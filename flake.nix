@@ -61,13 +61,13 @@
           ...
         }:
         {
-          options.programs.direnv-aws.enable = lib.mkEnableOption "the direnv-aws helpers";
+          options.programs.direnv.contrib.aws.enable = lib.mkEnableOption "the direnv-aws helpers";
 
-          config = lib.mkIf config.programs.direnv-aws.enable {
+          config = lib.mkIf config.programs.direnv.contrib.aws.enable {
             assertions = [
               {
                 assertion = config.programs.direnv.enable;
-                message = "programs.direnv-aws.enable requires programs.direnv.enable = true";
+                message = "programs.direnv.contrib.aws.enable requires programs.direnv.enable = true";
               }
             ];
 
