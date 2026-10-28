@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![CI](https://github.com/direnv-contrib/direnv-aws/actions/workflows/ci.yml/badge.svg)](https://github.com/direnv-contrib/direnv-aws/actions/workflows/ci.yml)
 
-Stop copying secrets into `.env` files. `direnv-aws` adds two functions to your `.envrc`, `use_aws_secret` and `use_aws_param`, that read AWS Secrets Manager secrets and SSM Parameter Store parameters when you enter a directory and export them as environment variables. When `AWS_PROFILE` is set, the calls run through aws-vault, so the same profile your shell uses is the one that reads the secrets.
+Stop copying secrets into `.env` files. `direnv-aws` adds two functions to your `.envrc`, `use aws_secret` and `use aws_param`, that read AWS Secrets Manager secrets and SSM Parameter Store parameters when you enter a directory and export them as environment variables. When `AWS_PROFILE` is set, the calls run through aws-vault, so the same profile your shell uses is the one that reads the secrets.
 
 ## Requirements
 
@@ -82,36 +82,36 @@ direnv fetchurl https://raw.githubusercontent.com/direnv-contrib/direnv-aws/v0.1
 ```bash
 source_url "https://raw.githubusercontent.com/direnv-contrib/direnv-aws/v0.1.0/lib/aws.sh" "sha256-…"
 source_url "https://raw.githubusercontent.com/direnv-contrib/direnv-aws/v0.1.0/lib/aws_secret.sh" "sha256-…"
-use_aws_secret prod/db/creds
+use aws_secret prod/db/creds
 ```
 
 Replace `v0.1.0` with the release you want. direnv refuses to load a file whose content does not match the hash, so a tag that is later changed cannot swap the code under you. `aws.sh` is shared by the other helpers, so it has to be sourced too, and each helper you use needs its own `source_url` line. The order does not matter.
 
 ## Usage
 
-Call the functions from a `.envrc`:
+Call the helpers from a `.envrc` with direnv's `use`. Each helper is a function named `use_<name>`, and `use <name>` calls it:
 
 ```bash
 # Secrets Manager
-use_aws_secret prod/db/creds           # JSON secret: one variable per key
-use_aws_secret DB_URL=prod/db/url      # the raw secret string, with an explicit name
+use aws_secret prod/db/creds           # JSON secret: one variable per key
+use aws_secret DB_URL=prod/db/url      # the raw secret string, with an explicit name
 
 # SSM Parameter Store
-use_aws_param /myapp/dev/              # every parameter under the path
-use_aws_param DB_URL=/myapp/dev/db     # a single parameter, with an explicit name
+use aws_param /myapp/dev/              # every parameter under the path
+use aws_param DB_URL=/myapp/dev/db     # a single parameter, with an explicit name
 ```
 
 Both functions take any number of arguments and print how many variables were loaded.
 
-### use_aws_secret
+### use aws_secret
 
 | Secret | Result |
 |--------|--------|
-| JSON object, `use_aws_secret prod/db/creds` | One variable per key, uppercased. Non-string values are exported as JSON |
-| Plain string, `use_aws_secret prod/db/url` | One variable named after the last path segment, `URL` |
-| `use_aws_secret NAME=secret-id` | The raw secret string, exported as `NAME` |
+| JSON object, `use aws_secret prod/db/creds` | One variable per key, uppercased. Non-string values are exported as JSON |
+| Plain string, `use aws_secret prod/db/url` | One variable named after the last path segment, `URL` |
+| `use aws_secret NAME=secret-id` | The raw secret string, exported as `NAME` |
 
-### use_aws_param
+### use aws_param
 
 | Argument | Result |
 |----------|--------|
