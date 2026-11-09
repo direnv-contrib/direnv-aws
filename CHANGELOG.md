@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/direnv-contrib/direnv-aws/compare/v0.2.0...v0.2.1) (2026-11-09)
+
+
+### Bug Fixes
+
+* **ci:** merge with the App token so main gets its CI run ([#6](https://github.com/direnv-contrib/direnv-aws/issues/6)) ([0921c18](https://github.com/direnv-contrib/direnv-aws/commit/0921c1840c18b6dd6362f98707fe3a17cc2967e9))
+
 ## [0.2.0](https://github.com/direnv-contrib/direnv-aws/compare/v0.1.0...v0.2.0) (2026-10-27)
 
 
